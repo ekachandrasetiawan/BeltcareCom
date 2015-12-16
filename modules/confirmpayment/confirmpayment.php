@@ -135,10 +135,11 @@ class ConfirmPayment extends Module
 	public function hookHeader($params)
 	{
 		$this->context->controller->addCSS(($this->_path).'confirmpayment.css', 'all');
+		$this->context->controller->addCSS(($this->_path).'views/css/jquery-picZoomer.css', 'all');
+		$this->context->controller->addJS(($this->_path).'views/js/jquery.picZoomer.js');
 		$this->context->controller->addJS(($this->_path).'views/js/confirmpayment.js');
 		$this->smarty->assign(array('confirmpayment_link' => $this->context->link->getModuleLink('confirmpayment', 'confirmpayment')));
-	}
-
+	}	
 	public function hookCustomerAccount($params)
 	{
 		return $this->display(__FILE__, 'my-account.tpl');

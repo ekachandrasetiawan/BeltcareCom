@@ -1,5 +1,4 @@
- $(document).ready(function(){
-	$('#datepicker').datepicker({
-		dateFormat : 'yy-mm-dd'
-	});	
+ $(function() {
+    $('.picZoomer').picZoomer();
+    $('.fancybox-inner').addClass('picZoomer');
 });

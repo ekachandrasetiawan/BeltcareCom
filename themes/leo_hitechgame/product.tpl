@@ -71,7 +71,8 @@
 					{/if}
 				</div>
 				{if $have_image}
-					<span id="view_full_size">
+					
+					<span id="view_full_size" class="picZoomer">
 						{if $jqZoomEnabled && $have_image && !$content_only}
 							<a class="jqzoom" title="{if !empty($cover.legend)}{$cover.legend|escape:'html':'UTF-8'}{else}{$product->name|escape:'html':'UTF-8'}{/if}" rel="gal1" href="{$link->getImageLink($product->link_rewrite, $cover.id_image, 'thickbox_default')|escape:'html':'UTF-8'}" itemprop="url">
 								<img itemprop="image" src="{$link->getImageLink($product->link_rewrite, $cover.id_image, 'large_default')|escape:'html':'UTF-8'}" title="{if !empty($cover.legend)}{$cover.legend|escape:'html':'UTF-8'}{else}{$product->name|escape:'html':'UTF-8'}{/if}" alt="{if !empty($cover.legend)}{$cover.legend|escape:'html':'UTF-8'}{else}{$product->name|escape:'html':'UTF-8'}{/if}"/>
@@ -84,7 +85,7 @@
 						{/if}
 					</span>
 				{else}
-					<span id="view_full_size">
+					<span id="view_full_size" class="sp-wrap">
 						<img itemprop="image" src="{$img_prod_dir}{$lang_iso}-default-large_default.jpg" id="bigpic" alt="" title="{$product->name|escape:'html':'UTF-8'}"/>
 						{if !$content_only}
 							<span class="span_link">
