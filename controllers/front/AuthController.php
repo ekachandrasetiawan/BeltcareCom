@@ -42,6 +42,7 @@ class AuthControllerCore extends FrontController
      */
     public function init()
     {
+
         parent::init();
 
         if (!Tools::getIsset('step') && $this->context->customer->isLogged() && !$this->ajax) {
@@ -149,6 +150,7 @@ class AuthControllerCore extends FrontController
         ));
 
         // Just set $this->template value here in case it's used by Ajax
+
         $this->setTemplate(_PS_THEME_DIR_.'authentication.tpl');
 
         if ($this->ajax) {
@@ -266,6 +268,7 @@ class AuthControllerCore extends FrontController
      */
     protected function processSubmitLogin()
     {
+
         Hook::exec('actionBeforeAuthentication');
         $passwd = trim(Tools::getValue('passwd'));
         $_POST['passwd'] = null;
@@ -329,7 +332,6 @@ class AuthControllerCore extends FrontController
 
                 if (!$this->ajax) {
                     $back = Tools::getValue('back','my-account');
-
                     if ($back == Tools::secureReferrer($back)) {
                         Tools::redirect(html_entity_decode($back));
                     }
@@ -359,15 +361,22 @@ class AuthControllerCore extends FrontController
      */
     protected function processCustomerNewsletter(&$customer)
     {
+        $blocknewsletter = Module::isInstalled('blocknewsletter') && $module_newsletter = Module::getInstanceByName('blocknewsletter');
+        if ($blocknewsletter && $module_newsletter->active && !Tools::getValue('newsletter')) {
+            if (is_callable(array($module_newsletter, 'isNewsletterRegistered')) && $module_newsletter->isNewsletterRegistered(Tools::getValue('email')) == $module_newsletter::GUEST_REGISTERED) {
+
+                /* Force newsletter registration as customer as already registred as guest */
+                $_POST['newsletter'] = true;
+            }
+        }
+
         if (Tools::getValue('newsletter')) {
+            $customer->newsletter = true;
             $customer->ip_registration_newsletter = pSQL(Tools::getRemoteAddr());
             $customer->newsletter_date_add = pSQL(date('Y-m-d H:i:s'));
-
-            if ($module_newsletter = Module::getInstanceByName('blocknewsletter')) {
-                /** @var Blocknewsletter $module_newsletter */
-                if ($module_newsletter->active) {
-                    $module_newsletter->confirmSubscription(Tools::getValue('email'));
-                }
+            /** @var Blocknewsletter $module_newsletter */
+            if ($blocknewsletter && $module_newsletter->active) {
+                $module_newsletter->confirmSubscription(Tools::getValue('email'));
             }
         }
     }
@@ -377,6 +386,7 @@ class AuthControllerCore extends FrontController
      */
     protected function processSubmitAccount()
     {
+
         Hook::exec('actionBeforeSubmitAccount');
         $this->create_account = true;
         if (Tools::isSubmit('submitAccount')) {
@@ -434,9 +444,8 @@ class AuthControllerCore extends FrontController
 
         if (!Configuration::get('PS_REGISTRATION_PROCESS_TYPE') && !$this->ajax && !Tools::isSubmit('submitGuestAccount')) {
             if (!count($this->errors)) {
-                if (Tools::isSubmit('newsletter')) {
-                    $this->processCustomerNewsletter($customer);
-                }
+
+                $this->processCustomerNewsletter($customer);
 
                 $customer->firstname = Tools::ucwords($customer->firstname);
                 $customer->birthday = (empty($_POST['years']) ? '' : (int)Tools::getValue('years').'-'.(int)Tools::getValue('months').'-'.(int)Tools::getValue('days'));
@@ -487,7 +496,7 @@ class AuthControllerCore extends FrontController
                         }
                         // else : redirection to the account
                         else {
-                            Tools::redirect('index.php?controller='.(($this->authRedirection !== false) ? urlencode($this->authRedirection) : 'my-account'));
+                            Tools::redirect('index.php?controller='.(($this->authRedirection !== false) ? urlencode($this->authRedirection) : 'hubungi-kami'));
                         }
                     } else {
                         $this->errors[] = Tools::displayError('An error occurred while creating your account.');
@@ -563,9 +572,8 @@ class AuthControllerCore extends FrontController
             if (Customer::customerExists(Tools::getValue('email'))) {
                 $this->errors[] = Tools::displayError('An account using this email address has already been registered. Please enter a valid password or request a new one. ', false);
             }
-            if (Tools::isSubmit('newsletter')) {
-                $this->processCustomerNewsletter($customer);
-            }
+
+            $this->processCustomerNewsletter($customer);
 
             $customer->birthday = (empty($_POST['years']) ? '' : (int)Tools::getValue('years').'-'.(int)Tools::getValue('months').'-'.(int)Tools::getValue('days'));
             if (!Validate::isBirthDate($customer->birthday)) {
@@ -698,11 +706,11 @@ class AuthControllerCore extends FrontController
      */
     protected function processSubmitCreate()
     {
-        if (!Validate::isEmail($email = Tools::getValue('email_create')) || empty($email)) {
+        if (!Validate::isEmail($email = trim(Tools::getValue('email_create'))) || empty($email)) {
             $this->errors[] = Tools::displayError('Invalid email address.');
         } elseif (Customer::customerExists($email)) {
             $this->errors[] = Tools::displayError('An account using this email address has already been registered. Please enter a valid password or request a new one. ', false);
-            $_POST['email'] = Tools::getValue('email_create');
+            $_POST['email'] = trim(Tools::getValue('email_create'));
             unset($_POST['email_create']);
         } else {
             $this->create_account = true;
