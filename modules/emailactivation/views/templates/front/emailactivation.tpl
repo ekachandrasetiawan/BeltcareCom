@@ -3,7 +3,6 @@
         <span class="navigation-pipe">{$navigationPipe}</span>
         Aktivasi Email
   {/capture}
-
  <p class="alert alert-success">
  		{if ($key==1)}
 			{l s='Registration successful, Account Anda Telah Active..'}

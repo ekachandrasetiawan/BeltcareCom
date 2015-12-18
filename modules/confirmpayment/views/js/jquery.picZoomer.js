@@ -54,7 +54,7 @@
 		zoomWidth:600,
 		zoomHeight:429,
 		scale:2.0,
-		zoomerPosition: {top: '0', left: '435px'}
+		zoomerPosition: {top: '-3px', left: '435px'}
 		/*,
 		zoomWidth: 320,
 		zoomHeight: 320*/
